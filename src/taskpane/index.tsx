@@ -11,7 +11,7 @@ initializeIcons();
 
 let isOfficeInitialized = false;
 
-const title = "Contoso Task Pane Add-in";
+const title = "Waves OutLook AI Add-in";
 
 const render = (Component) => {
   ReactDOM.render(
