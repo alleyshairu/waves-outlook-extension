@@ -1,4 +1,4 @@
-import { Dropdown, IDropdownOption, PrimaryButton, Stack, TextField } from "@fluentui/react";
+import { Checkbox, Dropdown, IDropdownOption, PrimaryButton, Stack, TextField } from "@fluentui/react";
 import React from "react";
 import { useState } from "react";
 import { EMAIL_TONES_LIST, EmailTone, get_email_tone_by_key } from "../../data/tone";
@@ -12,6 +12,7 @@ interface Form {
   length?: IDropdownOption;
   template?: IDropdownOption;
   instructions: string;
+  toc: boolean;
 }
 
 const transform_list_to_dropdown = (
@@ -45,7 +46,8 @@ const transform_list_to_dropdown = (
 const stackTokens = { childrenGap: 50 };
 
 const Form: React.FunctionComponent = () => {
-  const [form, set_form] = useState<Form>({ instructions: "" });
+  const [form, set_form] = useState<Form>({ instructions: "", toc: false });
+  const [reply, set_reply] = useState<string>("");
 
   const on_email_tone_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
     set_form({ ...form, tone: item });
@@ -70,8 +72,23 @@ const Form: React.FunctionComponent = () => {
     set_form({ ...form, instructions: val });
   };
 
-  const handle_generate_content_click = () => {
-    console.log(form);
+  function handle_waves_terms_conditions(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
+    set_form({ ...form, toc: checked });
+  }
+
+  const handle_generate_mail_click = () => {
+    // call openai
+
+    set_reply("mock response from openai.");
+  };
+
+  const handle_generate_reply_click = () => {
+    const reply_content = {
+      htmlBody: reply,
+      attachments: get_waves_toc_file_attachment(),
+    };
+
+    Office.context.mailbox.item.displayReplyForm(reply_content);
   };
 
   return (
@@ -108,14 +125,36 @@ const Form: React.FunctionComponent = () => {
           label="Instructions"
           multiline
           rows={5}
-          defaultValue={form.instructions}
+          value={form.instructions}
           onChange={on_email_instructions_change}
         />
 
-        <PrimaryButton text="Generate Content" onClick={handle_generate_content_click} />
+        <PrimaryButton text="Prepare Mail Based On Instructions Only" onClick={handle_generate_mail_click} />
+        <PrimaryButton text="Prepare Mail Based On Content" onClick={handle_generate_mail_click} />
+        <PrimaryButton text="Prepare Mail Based On Content And TOC" onClick={handle_generate_mail_click} />
+
+        <TextField label="Generated Reply" multiline rows={5} disabled value={reply} />
+
+        <Checkbox
+          label="Add Waves Terms & Condition Attachment In Reply"
+          checked={form.toc}
+          onChange={handle_waves_terms_conditions}
+        />
+
+        <PrimaryButton text="Generate Reply Form" onClick={handle_generate_reply_click} />
       </Stack>
     </div>
   );
+};
+
+const get_waves_toc_file_attachment = () => {
+  return [
+    {
+      type: "file",
+      name: "waves-terms-and-conditions.pdf",
+      url: "https://members.wavescarwash.com.au/shared/washer/members/uwc/uwc-terms-and-conditions.pdf",
+    },
+  ];
 };
 
 export { Form };
