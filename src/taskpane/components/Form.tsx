@@ -11,7 +11,7 @@ interface Form {
   style?: IDropdownOption;
   length?: IDropdownOption;
   template?: IDropdownOption;
-  body: string;
+  instructions: string;
 }
 
 const transform_list_to_dropdown = (
@@ -45,11 +45,29 @@ const transform_list_to_dropdown = (
 const stackTokens = { childrenGap: 50 };
 
 const Form: React.FunctionComponent = () => {
-  const [form, set_form] = useState<Form>({ body: "" });
+  const [form, set_form] = useState<Form>({ instructions: "" });
 
   const on_email_tone_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
-    console.log(item);
     set_form({ ...form, tone: item });
+  };
+
+  const on_email_template_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
+    set_form({ ...form, template: item });
+  };
+
+  const on_email_style_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
+    set_form({ ...form, style: item });
+  };
+
+  const on_email_length_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
+    set_form({ ...form, length: item });
+  };
+
+  const on_email_instructions_change = (
+    _event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+    val?: string,
+  ): void => {
+    set_form({ ...form, instructions: val });
   };
 
   const handle_generate_content_click = () => {
@@ -63,7 +81,7 @@ const Form: React.FunctionComponent = () => {
           label="Email Template"
           selectedKey={form.template?.key}
           // eslint-disable-next-line react/jsx-no-bind
-          onChange={on_email_tone_dropdown_change}
+          onChange={on_email_template_dropdown_change}
           placeholder="Select email template"
           options={transform_list_to_dropdown(EMAIL_TEMPLATE_LIST)}
         />
@@ -72,7 +90,7 @@ const Form: React.FunctionComponent = () => {
           label="Email Style"
           selectedKey={form.style?.key}
           // eslint-disable-next-line react/jsx-no-bind
-          onChange={on_email_tone_dropdown_change}
+          onChange={on_email_style_dropdown_change}
           placeholder="Select email style"
           options={transform_list_to_dropdown(EMAIL_STYLE_LIST)}
         />
@@ -86,7 +104,13 @@ const Form: React.FunctionComponent = () => {
           options={transform_list_to_dropdown(EMAIL_TONES_LIST)}
         />
 
-        <TextField label="Instructions" multiline rows={5} defaultValue={form.body} />
+        <TextField
+          label="Instructions"
+          multiline
+          rows={5}
+          defaultValue={form.instructions}
+          onChange={on_email_instructions_change}
+        />
 
         <PrimaryButton text="Generate Content" onClick={handle_generate_content_click} />
       </Stack>
