@@ -20,7 +20,7 @@ const render = (Component) => {
         <Component title={title} isOfficeInitialized={isOfficeInitialized} />
       </ThemeProvider>
     </AppContainer>,
-    document.getElementById("container")
+    document.getElementById("container"),
   );
 };
 

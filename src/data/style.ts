@@ -1,9 +1,12 @@
-interface EmailStyle {
+export interface EmailStyle {
   style: string;
 }
 
-const EMAIL_LIST_LIST: EmailStyle[] = [
-  { style: "no style applied" },
+export const get_email_style_by_key = (key: number): EmailStyle => {
+  return EMAIL_STYLE_LIST[key];
+};
+
+export const EMAIL_STYLE_LIST: EmailStyle[] = [
   { style: "Academic" },
   { style: "Analytical" },
   { style: "Argumentative" },

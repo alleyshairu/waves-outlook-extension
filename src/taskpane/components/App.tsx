@@ -1,6 +1,7 @@
 import * as React from "react";
 import Header from "./Header";
 import Progress from "./Progress";
+import { Form } from "./Form";
 
 /* global require */
 
@@ -9,17 +10,14 @@ export interface AppProps {
   isOfficeInitialized: boolean;
 }
 
-export interface AppState {
-}
+export interface AppState {}
 
 export default class App extends React.Component<AppProps, AppState> {
   constructor(props, context) {
     super(props, context);
   }
 
-  componentDidMount() {
-
-  }
+  componentDidMount() {}
 
   click = async () => {
     /**
@@ -42,8 +40,13 @@ export default class App extends React.Component<AppProps, AppState> {
 
     return (
       <div className="ms-welcome">
-        <Header logo={require("./../../../assets/waves-logo.png")} title={this.props.title} message="Welcome" />
-     </div>
+        <Header
+          logo={require("./../../../assets/waves-logo.png")}
+          title={this.props.title}
+          message="Waves Email Helper"
+        />
+        <Form></Form>
+      </div>
     );
   }
 }

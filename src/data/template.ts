@@ -1,9 +1,12 @@
-interface EmailTemplate {
+export interface EmailTemplate {
   template: string;
 }
 
-export const EMAIL_TEMPLATES: EmailTemplate[] = [
-  { template: "no template applied" },
+export const get_email_template_by_key = (key: number): EmailTemplate => {
+  return EMAIL_TEMPLATE_LIST[key];
+};
+
+export const EMAIL_TEMPLATE_LIST: EmailTemplate[] = [
   { template: "Reply to this email" },
   { template: "Ask for an introduction" },
   { template: "Cold outreach follow-up" },
