@@ -3,6 +3,8 @@ import {
   Dropdown,
   IDropdownOption,
   Label,
+  MessageBar,
+  MessageBarType,
   PrimaryButton,
   Spinner,
   SpinnerSize,
@@ -31,6 +33,7 @@ interface Form {
 
 const Form: React.FunctionComponent = () => {
   const [loading, set_loading] = useState<boolean>(false);
+  const [error, set_error] = useState<string>("");
 
   const [form, set_form] = useState<Form>({
     instructions: "",
@@ -65,7 +68,29 @@ const Form: React.FunctionComponent = () => {
   };
 
   function handle_email_content_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
-    set_form({ ...form, include_email_content: checked });
+    if (!checked) {
+      set_form({ ...form, email: "", include_email_content: checked });
+      return;
+    }
+
+    set_loading(true);
+
+    try {
+      Office.context.mailbox.item.body.getAsync(Office.CoercionType.Text, async function (res) {
+        set_loading(false);
+        if (res.status !== Office.AsyncResultStatus.Succeeded) {
+          set_error(res.error.message);
+          set_form({ ...form, email: "", include_email_content: false });
+          // do something with the error
+        } else {
+          set_form({ ...form, email: res.value, include_email_content: true });
+        }
+      });
+    } catch {
+      set_loading(false);
+      set_form({ ...form, email: "", include_email_content: false });
+      set_error("Something went wrong fetching email content");
+    }
   }
 
   function handle_waves_toc_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
@@ -92,14 +117,14 @@ const Form: React.FunctionComponent = () => {
 
     try {
       set_preview("");
+      set_error("");
       set_loading(true);
       let response = await run_waves_assistant(assistant);
       set_loading(false);
       set_preview(response.data.choices[0].message.content);
     } catch (error) {
       set_loading(false);
-      // TODO: Show error someone where else
-      set_preview(error.message);
+      set_error(error.message);
     }
   };
 
@@ -180,6 +205,12 @@ const Form: React.FunctionComponent = () => {
             onChange={handle_waves_toc_file_checkbox}
           />
         </Stack>
+
+        {error ? (
+          <MessageBar messageBarType={MessageBarType.error} isMultiline={true}>
+            {error}
+          </MessageBar>
+        ) : null}
 
         {!loading ? (
           <PrimaryButton text="Submit" onClick={handle_submit_click} />
