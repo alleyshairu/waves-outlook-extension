@@ -40,11 +40,6 @@ export default class App extends React.Component<AppProps, AppState> {
 
     return (
       <div className="ms-welcome">
-        <Header
-          logo={require("./../../../assets/waves-logo.png")}
-          title={this.props.title}
-          message="Waves Mail Assistant"
-        />
         <Form></Form>
       </div>
     );
