@@ -121,6 +121,15 @@ const Form: React.FunctionComponent = () => {
           options={transform_list_to_dropdown(EMAIL_TONES_LIST)}
         />
 
+        <Dropdown
+          label="Email Length"
+          selectedKey={form.length?.key}
+          // eslint-disable-next-line react/jsx-no-bind
+          onChange={on_email_tone_dropdown_change}
+          placeholder="Select email length"
+          options={transform_list_to_dropdown(EMAIL_LENGTH_LIST)}
+        />
+
         <TextField
           label="Instructions"
           multiline
