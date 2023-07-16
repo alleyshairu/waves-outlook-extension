@@ -92,6 +92,7 @@ module.exports = async (env, options) => {
       }),
       new webpack.ProvidePlugin({
         Promise: ["es6-promise", "Promise"],
+        process: ["process/browser"],
       }),
     ],
     devServer: {

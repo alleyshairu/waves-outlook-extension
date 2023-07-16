@@ -12,9 +12,10 @@ import {
 import React, { Children } from "react";
 import { useState } from "react";
 import { EMAIL_TONES_LIST, EmailTone, get_email_tone_by_key } from "../../data/tone";
-import { EMAIL_TEMPLATE_LIST, EmailTemplate } from "../../data/template";
-import { EMAIL_LENGTH_LIST, EmailLength } from "../../data/length";
-import { EMAIL_STYLE_LIST, EmailStyle } from "../../data/style";
+import { EMAIL_TEMPLATE_LIST, EmailTemplate, get_email_template_by_key } from "../../data/template";
+import { EMAIL_LENGTH_LIST, EmailLength, get_email_length_by_key } from "../../data/length";
+import { EMAIL_STYLE_LIST, EmailStyle, get_email_style_by_key } from "../../data/style";
+import { run_waves_assistant } from "../../assistant";
 
 interface Form {
   tone?: IDropdownOption;
@@ -22,19 +23,22 @@ interface Form {
   length?: IDropdownOption;
   template?: IDropdownOption;
   instructions: string;
-  waves_toc: boolean;
-  email_content: boolean;
-  waves_toc_file: boolean;
+  email?: string;
+  include_waves_toc: boolean;
+  include_email_content: boolean;
+  include_waves_toc_file: boolean;
 }
 
 const Form: React.FunctionComponent = () => {
   const [loading, set_loading] = useState<boolean>(false);
+
   const [form, set_form] = useState<Form>({
     instructions: "",
-    email_content: false,
-    waves_toc: false,
-    waves_toc_file: false,
+    include_email_content: false,
+    include_waves_toc: false,
+    include_waves_toc_file: false,
   });
+
   const [preview, set_preview] = useState<string>("");
 
   const on_email_tone_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
@@ -61,39 +65,54 @@ const Form: React.FunctionComponent = () => {
   };
 
   function handle_email_content_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
-    set_form({ ...form, email_content: checked });
+    set_form({ ...form, include_email_content: checked });
   }
 
   function handle_waves_toc_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
-    set_form({ ...form, waves_toc: checked });
+    set_form({ ...form, include_waves_toc: checked });
   }
 
   function handle_waves_toc_file_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
-    set_form({ ...form, waves_toc_file: checked });
+    set_form({ ...form, include_waves_toc_file: checked });
   }
 
   const handle_submit_click = async () => {
-    /** 
-    call_open_ai([])
-      .then((response) => {
-        console.log(response)
-      })
-      .catch((err)=> {
-        console.log(err)
-      })
+    const assistant = {
+      email_length: form.length ? get_email_length_by_key(Number(form.length.key)) : null,
+      email_tone: form.tone ? get_email_tone_by_key(Number(form.tone.key)) : null,
+      email_style: form.style ? get_email_style_by_key(Number(form.style.key)) : null,
+      email_template: form.template ? get_email_template_by_key(Number(form.template.key)) : null,
+      instructions: form.instructions,
+      email: form.email,
+      rules: {
+        include_waves_toc: form.include_waves_toc,
+        include_email_content: form.include_email_content,
+      },
+    };
 
-      **/
+    try {
+      set_preview("");
+      set_loading(true);
+      let response = await run_waves_assistant(assistant);
+      set_loading(false);
+      set_preview(response.data.choices[0].message.content);
+    } catch (error) {
+      set_loading(false);
+      // TODO: Show error someone where else
+      set_preview(error.message);
+    }
   };
 
   const handle_generate_reply_click = () => {
-    /*
     const reply_content = {
-      htmlBody: reply,
-      attachments: get_waves_toc_file_attachment(),
+      htmlBody: preview,
     };
 
+    if (form.include_waves_toc_file) {
+      reply_content["attachments"] = get_waves_toc_file_attachment();
+    }
+
     Office.context.mailbox.item.displayReplyForm(reply_content);
-    */
   };
 
   return (
@@ -146,18 +165,18 @@ const Form: React.FunctionComponent = () => {
         <Stack tokens={{ childrenGap: 5 }}>
           <Checkbox
             label="Use email content as prompt"
-            checked={form.email_content}
+            checked={form.include_email_content}
             onChange={handle_email_content_checkbox}
           />
           <Checkbox
             label="Use Waves Terms & Conditions as prompt"
-            checked={form.waves_toc}
+            checked={form.include_waves_toc}
             onChange={handle_waves_toc_checkbox}
           />
 
           <Checkbox
             label="Add Waves Terms & Condition Attachment In Reply"
-            checked={form.waves_toc_file}
+            checked={form.include_waves_toc_file}
             onChange={handle_waves_toc_file_checkbox}
           />
         </Stack>
@@ -165,7 +184,7 @@ const Form: React.FunctionComponent = () => {
         {!loading ? (
           <PrimaryButton text="Submit" onClick={handle_submit_click} />
         ) : (
-          <Stack tokens={{ childrenGap: 15 }}>
+          <Stack horizontal tokens={{ childrenGap: 5 }}>
             <Spinner size={SpinnerSize.xSmall} />
             <Label>Generating email ...</Label>
           </Stack>
