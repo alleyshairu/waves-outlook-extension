@@ -11,7 +11,7 @@ import {
   Stack,
   TextField,
 } from "@fluentui/react";
-import React, { Children } from "react";
+import React, { Children, useEffect } from "react";
 import { useState } from "react";
 import { EMAIL_TONES_LIST, EmailTone, get_email_tone_by_key } from "../../data/tone";
 import { EMAIL_TEMPLATE_LIST, EmailTemplate, get_email_template_by_key } from "../../data/template";
@@ -34,6 +34,14 @@ interface Form {
 const Form: React.FunctionComponent = () => {
   const [loading, set_loading] = useState<boolean>(false);
   const [error, set_error] = useState<string>("");
+  const [is_compose_page, set_is_compose_page] = useState<boolean>(false);
+
+  useEffect(() => {
+    const url = window.location.href;
+    if (url.indexOf("compose") > 1) {
+      set_is_compose_page(true);
+    }
+  }, []);
 
   const [form, set_form] = useState<Form>({
     instructions: "",
@@ -68,7 +76,7 @@ const Form: React.FunctionComponent = () => {
   };
 
   function handle_email_content_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
-    if (!checked) {
+    if (!checked && is_compose_page) {
       set_form({ ...form, email: "", include_email_content: checked });
       return;
     }
@@ -78,13 +86,14 @@ const Form: React.FunctionComponent = () => {
     try {
       Office.context.mailbox.item.body.getAsync(Office.CoercionType.Text, async function (res) {
         set_loading(false);
-        if (res.status !== Office.AsyncResultStatus.Succeeded) {
-          set_error(res.error.message);
-          set_form({ ...form, email: "", include_email_content: false });
-          // do something with the error
-        } else {
+
+        if (res.status === Office.AsyncResultStatus.Succeeded) {
           set_form({ ...form, email: res.value, include_email_content: true });
+          return;
         }
+
+        set_error(res.error.message);
+        set_form({ ...form, email: "", include_email_content: false });
       });
     } catch {
       set_loading(false);
@@ -188,11 +197,13 @@ const Form: React.FunctionComponent = () => {
         />
 
         <Stack tokens={{ childrenGap: 5 }}>
-          <Checkbox
-            label="Use email content as prompt"
-            checked={form.include_email_content}
-            onChange={handle_email_content_checkbox}
-          />
+          {!is_compose_page ? (
+            <Checkbox
+              label="Use email content as prompt"
+              checked={form.include_email_content}
+              onChange={handle_email_content_checkbox}
+            />
+          ) : null}
           <Checkbox
             label="Use Waves Terms & Conditions as prompt"
             checked={form.include_waves_toc}
