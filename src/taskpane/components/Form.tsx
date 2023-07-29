@@ -50,8 +50,6 @@ const Form: React.FunctionComponent = () => {
     include_waves_toc_file: false,
   });
 
-  const [preview, set_preview] = useState<string>("");
-
   const on_email_tone_dropdown_change = (_event: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
     set_form({ ...form, tone: item });
   };
@@ -125,28 +123,43 @@ const Form: React.FunctionComponent = () => {
     };
 
     try {
-      set_preview("");
       set_error("");
       set_loading(true);
       let response = await run_waves_assistant(assistant);
+      let body = response.data.choices[0].message.content.split("\n").join("<br />");
       set_loading(false);
-      set_preview(response.data.choices[0].message.content);
+
+      // new email
+      if (is_compose_page) {
+        Office.context.mailbox.item.body.setSelectedDataAsync(body, {
+          coercionType: Office.CoercionType.Html,
+        });
+
+        if (form.include_waves_toc_file) {
+          const attachment = get_waves_toc_file_attachment()[0];
+
+          Office.context.mailbox.item.addFileAttachmentAsync(attachment["url"], attachment["name"], {
+            isInline: false,
+          });
+        }
+        return;
+      }
+
+      // generate reply form
+      const reply_form = {
+        htmlBody: body,
+      };
+
+      if (form.include_waves_toc_file) {
+        const attachments = get_waves_toc_file_attachment();
+        reply_form["attachments"] = attachments;
+      }
+
+      Office.context.mailbox.item.displayReplyForm(reply_form);
     } catch (error) {
       set_loading(false);
       set_error(error.message);
     }
-  };
-
-  const handle_generate_reply_click = () => {
-    const reply = {
-      htmlBody: preview.split("\n").join("<br />"),
-    };
-
-    if (form.include_waves_toc_file) {
-      reply["attachments"] = get_waves_toc_file_attachment();
-    }
-
-    Office.context.mailbox.item.displayReplyForm(reply);
   };
 
   return (
@@ -231,13 +244,6 @@ const Form: React.FunctionComponent = () => {
             <Label>Generating email ...</Label>
           </Stack>
         )}
-
-        {preview ? (
-          <div>
-            <TextField label="Generated Reply" multiline rows={5} disabled value={preview} />
-            <PrimaryButton text="Generate Reply Form" onClick={handle_generate_reply_click} />
-          </div>
-        ) : null}
       </Stack>
     </div>
   );
