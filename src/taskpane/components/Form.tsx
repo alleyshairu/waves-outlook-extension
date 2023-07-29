@@ -138,15 +138,15 @@ const Form: React.FunctionComponent = () => {
   };
 
   const handle_generate_reply_click = () => {
-    const reply_content = {
-      htmlBody: preview,
+    const reply = {
+      htmlBody: preview.split("\n").join("<br />"),
     };
 
     if (form.include_waves_toc_file) {
-      reply_content["attachments"] = get_waves_toc_file_attachment();
+      reply["attachments"] = get_waves_toc_file_attachment();
     }
 
-    Office.context.mailbox.item.displayReplyForm(reply_content);
+    Office.context.mailbox.item.displayReplyForm(reply);
   };
 
   return (
