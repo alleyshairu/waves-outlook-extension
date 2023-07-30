@@ -62,21 +62,6 @@
                     <SourceLocation resid="Taskpane.ComposeUrl"/>
                   </Action>
                 </Control>
-                <Control xsi:type="Button" id="ActionButton">
-                  <Label resid="ActionButton.Label"/>
-                  <Supertip>
-                    <Title resid="ActionButton.Label"/>
-                    <Description resid="ActionButton.Tooltip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16"/>
-                    <bt:Image size="32" resid="Icon.32x32"/>
-                    <bt:Image size="80" resid="Icon.80x80"/>
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>action</FunctionName>
-                  </Action>
-                </Control>
               </Group>
             </OfficeTab>
           </ExtensionPoint>     
@@ -120,7 +105,6 @@
         <bt:String id="GroupLabelCompose" DefaultValue="Waves Assistant"/>
         <bt:String id="GroupLabelRead" DefaultValue="Waves Mail Assistant"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="Waves Mail Assistant"/>
-        <bt:String id="ActionButton.Label" DefaultValue="Generate mail"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens a pane that can help you to turn a sentence into a professional business mail."/>
