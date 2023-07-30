@@ -237,7 +237,7 @@ const Form: React.FunctionComponent = () => {
         ) : null}
 
         {!loading ? (
-          <PrimaryButton text="Submit" onClick={handle_submit_click} />
+          <PrimaryButton text="Generate Email" onClick={handle_submit_click} />
         ) : (
           <Stack horizontal tokens={{ childrenGap: 5 }}>
             <Spinner size={SpinnerSize.xSmall} />
