@@ -74,7 +74,7 @@ const Form: React.FunctionComponent = () => {
   };
 
   function handle_email_content_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
-    if (!checked && is_compose_page) {
+    if (!checked || is_compose_page) {
       set_form({ ...form, email: "", include_email_content: checked });
       return;
     }
