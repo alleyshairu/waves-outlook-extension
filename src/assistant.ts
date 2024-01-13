@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import { EmailTemplate } from "./data/template";
 import { EmailLength } from "./data/length";
 import { EmailStyle } from "./data/style";
@@ -37,7 +37,10 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
   const prompts: Prompt[] = [];
 
   if (null !== assistant.email_template) {
-    prompts.push({ role: "user", content: `Write an email that ${assistant.email_template.template}` });
+    prompts.push({
+      role: "user",
+      content: `Write an email that ${assistant.email_template.template}`,
+    });
   }
 
   if (null !== assistant.email_style) {
@@ -45,7 +48,10 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
   }
 
   if (null !== assistant.email_tone) {
-    prompts.push({ role: "user", content: `Use the ${assistant.email_tone.tone}, when writing response` });
+    prompts.push({
+      role: "user",
+      content: `Use the ${assistant.email_tone.tone}, when writing response`,
+    });
   }
 
   if (null !== assistant.email_length) {
@@ -73,13 +79,12 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
 export function run_waves_assistant(assistant: WavesAssistant) {
   const messages = prepare_prompt(assistant);
 
-  const configuration = new Configuration({
+  const openai = new OpenAI({
     apiKey: KEY,
+    dangerouslyAllowBrowser: true,
   });
 
-  const openai = new OpenAIApi(configuration);
-
-  return openai.createChatCompletion({
+  return openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: messages,
   });

@@ -1,5 +1,4 @@
 import * as React from "react";
-import Header from "./Header";
 import Progress from "./Progress";
 import { Form } from "./Form";
 

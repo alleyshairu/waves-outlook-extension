@@ -126,7 +126,7 @@ const Form: React.FunctionComponent = () => {
       set_error("");
       set_loading(true);
       let response = await run_waves_assistant(assistant);
-      let body = response.data.choices[0].message.content.split("\n").join("<br />");
+      let body = response.choices[0].message.content.split("\n").join("<br />");
       set_loading(false);
 
       // new email
