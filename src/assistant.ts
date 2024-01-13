@@ -1,8 +1,5 @@
 import OpenAI from "openai";
-import { EmailTemplate } from "./data/template";
-import { EmailLength } from "./data/length";
-import { EmailStyle } from "./data/style";
-import { EmailTone } from "./data/tone";
+import { EmailTemplate } from "./template";
 
 // TODO: use environment variables
 const KEY = "";
@@ -14,19 +11,12 @@ export interface Prompt {
   content: string;
 }
 
-export interface WavesAssistantRules {
-  include_waves_toc: boolean;
-  include_email_content: boolean;
-}
-
 export interface WavesAssistant {
-  email_template: EmailTemplate | null;
-  email_length: EmailLength | null;
-  email_style: EmailStyle | null;
-  email_tone: EmailTone | null;
+  email: string;
   instructions: string;
-  email?: string;
-  rules: WavesAssistantRules;
+  email_template: EmailTemplate;
+  use_sender_email_in_prompt?: string;
+  use_waves_toc_in_prompt?: string;
 }
 
 /**
@@ -36,44 +26,27 @@ export interface WavesAssistant {
 function prepare_prompt(assistant: WavesAssistant): Prompt[] {
   const prompts: Prompt[] = [];
 
-  if (null !== assistant.email_template) {
-    prompts.push({
-      role: "user",
-      content: `Write an email that ${assistant.email_template.template}`,
-    });
-  }
-
-  if (null !== assistant.email_style) {
-    prompts.push({ role: "user", content: `Write email in ${assistant.email_style.style} style` });
-  }
-
-  if (null !== assistant.email_tone) {
-    prompts.push({
-      role: "user",
-      content: `Use the ${assistant.email_tone.tone}, when writing response`,
-    });
-  }
-
-  if (null !== assistant.email_length) {
-    prompts.push({ role: "user", content: `Write the response in ${assistant.email_length.size}` });
-  }
+  prompts.push({
+    role: "user",
+    content: generate_prompt(assistant),
+  });
 
   // include instructions if they aren't empty
   if (assistant.instructions) {
     prompts.push({ role: "user", content: assistant.instructions });
   }
 
-  // only include email content if specifically checked
-  if (assistant.rules.include_email_content && assistant.email) {
-    prompts.push({ role: "user", content: assistant.email });
-  }
-
   // only include waves toc if specifically checked
-  if (assistant.rules.include_email_content) {
+  if (assistant.use_waves_toc_in_prompt) {
     // TODO: need to write waves toc + services summary and then add it as a prompt
   }
 
   return prompts;
+}
+
+function generate_prompt(assistant: WavesAssistant): string {
+  let string = `I have an email that I need to convert into a ${assistant.email_template.key} format. Here's the original text of the email: ${assistant.email}. Could you help reformat and rewrite this email to meet these requirements?`;
+  return string;
 }
 
 export function run_waves_assistant(assistant: WavesAssistant) {

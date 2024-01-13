@@ -65,28 +65,6 @@
               </Group>
             </OfficeTab>
           </ExtensionPoint>     
-          <ExtensionPoint xsi:type="MessageReadCommandSurface">
-            <OfficeTab id="TabDefault">
-              <Group id="AI.msgReadGroup">
-                <Label resid="GroupLabelRead"/>
-                <Control xsi:type="Button" id="msgReadOpenPaneButton">
-                  <Label resid="TaskpaneButton.Label"/>
-                  <Supertip>
-                    <Title resid="TaskpaneButton.Label"/>
-                    <Description resid="TaskpaneButton.Tooltip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16"/>
-                    <bt:Image size="32" resid="Icon.32x32"/>
-                    <bt:Image size="80" resid="Icon.80x80"/>
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="Taskpane.SummaryUrl"/>
-                  </Action>
-                </Control>               
-              </Group>
-            </OfficeTab>
-          </ExtensionPoint> 
         </DesktopFormFactor>
       </Host>
     </Hosts>
@@ -98,17 +76,15 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html"/>
-        <bt:Url id="Taskpane.ComposeUrl" DefaultValue="https://localhost:3000/taskpane.html?action=compose"/>
-        <bt:Url id="Taskpane.SummaryUrl" DefaultValue="https://localhost:3000/taskpane.html?action=summary"/>
+        <bt:Url id="Taskpane.ComposeUrl" DefaultValue="https://localhost:3000/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GroupLabelCompose" DefaultValue="Waves Assistant"/>
+        <bt:String id="GroupLabelCompose" DefaultValue="Waves Mail Assistant"/>
         <bt:String id="GroupLabelRead" DefaultValue="Waves Mail Assistant"/>
-        <bt:String id="TaskpaneButton.Label" DefaultValue="Waves Mail Assistant"/>
+        <bt:String id="TaskpaneButton.Label" DefaultValue="Open waves mail assistant"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens a pane that can help you to turn a sentence into a professional business mail."/>
-        <bt:String id="ActionButton.Tooltip" DefaultValue="Generate a business mail starting from the selected text."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
