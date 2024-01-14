@@ -1,6 +1,6 @@
 {
   "name": "office-addin-taskpane-react",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/Office-Addin-TaskPane-React.git"
@@ -24,12 +24,14 @@
     "stop": "office-addin-debugging stop manifest.xml",
     "validate": "office-addin-manifest validate manifest.xml",
     "watch": "webpack --mode development --watch",
-    "format": "prettier 'src/**/*.{ts,tsx}' --write"
+    "format": "prettier 'src/**/*.{ts,tsx}' --write",
+    "postversion": "./postversion.sh"
   },
   "dependencies": {
     "@fluentui/react": "^8.52.3",
     "core-js": "^3.9.1",
     "es6-promise": "^4.2.8",
+    "genversion": "^3.2.0",
     "openai": "^4.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { version } from "../../version";
 
 export interface HeaderProps {
   title: string;
@@ -14,6 +15,7 @@ export default class Header extends React.Component<HeaderProps> {
       <section className="ms-welcome__header ms-bgColor-neutralLighter ms-u-fadeIn500">
         <img width="90" height="90" src={logo} alt={title} title={title} />
         <h1 className="ms-fontColor-neutralPrimary">{message}</h1>
+        <small>Version: {version}</small>
       </section>
     );
   }

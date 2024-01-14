@@ -1,6 +1,8 @@
 import * as React from "react";
-import Progress from "./Progress";
 import { Form } from "./Form";
+import Header from "./Header";
+import { version } from "../../version";
+import { Stack } from "@fluentui/react";
 
 /* global require */
 
@@ -29,7 +31,7 @@ export default class App extends React.Component<AppProps, AppState> {
 
     if (!isOfficeInitialized) {
       return (
-        <Progress
+        <Header
           title={title}
           logo={require("./../../../assets/waves-logo.png")}
           message="Please sideload your addin to see app body."
@@ -38,8 +40,11 @@ export default class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <div className="ms-welcome">
+      <div className="waves-app">
         <Form></Form>
+        <div className="version">
+          <small>Version: {version}</small>
+        </div>
       </div>
     );
   }

@@ -8,13 +8,13 @@ import {
   Spinner,
   SpinnerSize,
   Stack,
-  TextField,
   ChoiceGroup,
   IChoiceGroupOption,
 } from "@fluentui/react";
 import React, { Children, useEffect, useState } from "react";
 import { run_waves_assistant, WavesAssistant } from "../../assistant";
 import { EMAIL_TEMPLATE_LIST, EmailTemplate, get_email_template_by_key } from "../../template";
+import {version} from '../../version';
 
 interface Form {
   email: string;
@@ -129,7 +129,7 @@ const Form: React.FunctionComponent = () => {
   };
 
   return (
-    <div className="main-form">
+    <div>
       <Stack tokens={{ childrenGap: 15 }}>
         <ChoiceGroup
           defaultSelectedKey={EMAIL_TEMPLATE_LIST[0].key}
