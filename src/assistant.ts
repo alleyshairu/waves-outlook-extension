@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { EmailTemplate } from "./template";
-
+import { terms_and_conditions } from "./tos";
 // TODO: use environment variables
 const KEY = "";
 
@@ -16,7 +16,7 @@ export interface WavesAssistant {
   instructions: string;
   email_template: EmailTemplate;
   use_sender_email_in_prompt?: string;
-  use_waves_toc_in_prompt?: string;
+  use_waves_toc_in_prompt: boolean;
 }
 
 /**
@@ -25,6 +25,13 @@ export interface WavesAssistant {
  */
 function prepare_prompt(assistant: WavesAssistant): Prompt[] {
   const prompts: Prompt[] = [];
+
+  if (assistant.use_waves_toc_in_prompt) {
+    prompts.push({
+      role: "system",
+      content: `You are running a car wash business and these are your terms and conditions are as follows: ${terms_and_conditions}`,
+    });
+  }
 
   prompts.push({
     role: "user",
@@ -45,7 +52,13 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
 }
 
 function generate_prompt(assistant: WavesAssistant): string {
-  let string = `I have an email that I need to convert into a ${assistant.email_template.key} format. Here's the original text of the email: ${assistant.email}. Could you help reformat and rewrite this email to meet these requirements?`;
+
+  let ref = "";
+  if(assistant.use_waves_toc_in_prompt) {
+    ref = ` Make sure you write based on the waves terms and condition. `
+  }
+
+  let string = `I have an email that I need to convert into a ${assistant.email_template.key} format. Here's the original text of the email: ${assistant.email}.${ref}Could you help reformat and rewrite this email to meet these requirements?`;
   return string;
 }
 

@@ -14,7 +14,7 @@ import {
 import React, { Children, useEffect, useState } from "react";
 import { run_waves_assistant, WavesAssistant } from "../../assistant";
 import { EMAIL_TEMPLATE_LIST, EmailTemplate, get_email_template_by_key } from "../../template";
-import {version} from '../../version';
+import { version } from "../../version";
 
 interface Form {
   email: string;
@@ -73,7 +73,7 @@ const Form: React.FunctionComponent = () => {
     }
   }
 
-  function handle_waves_toc_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
+  function handle_include_waves_toc_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
     set_form({ ...form, include_waves_toc: checked });
   }
 
@@ -92,6 +92,7 @@ const Form: React.FunctionComponent = () => {
       const assistant: WavesAssistant = {
         email: res.value,
         instructions: form.instructions,
+        use_waves_toc_in_prompt: form.include_waves_toc,
         email_template: get_email_template_by_key(form.template.key.toString()),
       };
 
@@ -140,7 +141,13 @@ const Form: React.FunctionComponent = () => {
 
         <Label>Optional Goodies</Label>
         <Checkbox
-          label="Add Waves Terms & Condition Attachment In Reply"
+          label="Refer waves terms and conditions when generating email"
+          checked={form.include_waves_toc}
+          onChange={handle_include_waves_toc_checkbox}
+        />
+
+        <Checkbox
+          label="Add waves Terms & condition attachment in email"
           checked={form.include_waves_toc_file}
           onChange={handle_waves_toc_file_checkbox}
         />
