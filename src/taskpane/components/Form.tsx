@@ -102,10 +102,6 @@ const Form: React.FunctionComponent = () => {
         let body = response.choices[0].message.content.split("\n").join("<br />");
         set_loading(false);
 
-        Office.context.mailbox.item.body.setSelectedDataAsync(body, {
-          coercionType: Office.CoercionType.Html,
-        });
-
         if (form.include_waves_toc_file) {
           const attachment = get_waves_toc_file_attachment()[0];
           Office.context.mailbox.item.addFileAttachmentAsync(attachment["url"], attachment["name"], {
