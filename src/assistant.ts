@@ -38,6 +38,11 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
     content: generate_prompt(assistant),
   });
 
+  prompts.push({
+    role: "system",
+    content: `Never add the email title, signature, and final greetings when writing the email.`,
+  });
+
   // include instructions if they aren't empty
   if (assistant.instructions) {
     prompts.push({ role: "user", content: assistant.instructions });
@@ -52,10 +57,9 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
 }
 
 function generate_prompt(assistant: WavesAssistant): string {
-
   let ref = "";
-  if(assistant.use_waves_toc_in_prompt) {
-    ref = ` Make sure you write based on the waves terms and condition. `
+  if (assistant.use_waves_toc_in_prompt) {
+    ref = ` Make sure you write based on the waves terms and condition. `;
   }
 
   let string = `I have an email that I need to convert into a ${assistant.email_template.key} format. Here's the original text of the email: ${assistant.email}.${ref}Could you help reformat and rewrite this email to meet these requirements?`;

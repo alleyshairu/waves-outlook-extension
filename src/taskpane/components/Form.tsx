@@ -46,7 +46,10 @@ const Form: React.FunctionComponent = () => {
     include_waves_toc_file: false,
   });
 
-  function handle_email_content_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
+  function handle_email_content_checkbox(
+    _ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+    checked?: boolean,
+  ) {
     if (!checked || is_compose_page) {
       //set_form({ ...form, email: "", include_email_content: checked });
       return;
@@ -73,24 +76,37 @@ const Form: React.FunctionComponent = () => {
     }
   }
 
-  function handle_include_waves_toc_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
+  function handle_include_waves_toc_checkbox(
+    _ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+    checked?: boolean,
+  ) {
     set_form({ ...form, include_waves_toc: checked });
   }
 
-  function handle_waves_toc_file_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
+  function handle_waves_toc_file_checkbox(
+    _ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+    checked?: boolean,
+  ) {
     set_form({ ...form, include_waves_toc_file: checked });
   }
 
   const handle_submit_click = async () => {
     set_error("");
-    Office.context.mailbox.item.body.getAsync(Office.CoercionType.Text, async (res) => {
+
+    Office.context.mailbox.item.getSelectedDataAsync(Office.CoercionType.Text, async (res) => {
       if (res.status !== Office.AsyncResultStatus.Succeeded) {
         set_error(res.error.message);
         return;
       }
 
+      const email = res.value.data.trim();
+      if (email === "") {
+        set_error("Please choose or highlight the email content that you want to transform.");
+        return;
+      }
+
       const assistant: WavesAssistant = {
-        email: res.value,
+        email: res.value.data,
         instructions: form.instructions,
         use_waves_toc_in_prompt: form.include_waves_toc,
         email_template: get_email_template_by_key(form.template.key.toString()),
@@ -104,18 +120,26 @@ const Form: React.FunctionComponent = () => {
 
         if (form.include_waves_toc_file) {
           const attachment = get_waves_toc_file_attachment()[0];
-          Office.context.mailbox.item.addFileAttachmentAsync(attachment["url"], attachment["name"], {
-            isInline: false,
-          });
+          Office.context.mailbox.item.addFileAttachmentAsync(
+            attachment["url"],
+            attachment["name"],
+            {
+              isInline: false,
+            },
+          );
         }
 
-        Office.context.mailbox.item.body.setAsync(body, { coercionType: Office.CoercionType.Html }, (res) => {
-          set_loading(false);
-          if (res.status !== Office.AsyncResultStatus.Succeeded) {
-            set_error(res.error.message);
-            return;
-          }
-        });
+        Office.context.mailbox.item.body.setSelectedDataAsync(
+          body,
+          { coercionType: Office.CoercionType.Html },
+          (res) => {
+            set_loading(false);
+            if (res.status !== Office.AsyncResultStatus.Succeeded) {
+              set_error(res.error.message);
+              return;
+            }
+          },
+        );
       } catch (error) {
         set_loading(false);
         set_error(error.message);
