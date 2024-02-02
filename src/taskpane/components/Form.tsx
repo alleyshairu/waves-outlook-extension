@@ -46,10 +46,7 @@ const Form: React.FunctionComponent = () => {
     include_waves_toc_file: false,
   });
 
-  function handle_email_content_checkbox(
-    _ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
-    checked?: boolean,
-  ) {
+  function handle_email_content_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
     if (!checked || is_compose_page) {
       //set_form({ ...form, email: "", include_email_content: checked });
       return;
@@ -76,17 +73,11 @@ const Form: React.FunctionComponent = () => {
     }
   }
 
-  function handle_include_waves_toc_checkbox(
-    _ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
-    checked?: boolean,
-  ) {
+  function handle_include_waves_toc_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
     set_form({ ...form, include_waves_toc: checked });
   }
 
-  function handle_waves_toc_file_checkbox(
-    _ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
-    checked?: boolean,
-  ) {
+  function handle_waves_toc_file_checkbox(_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) {
     set_form({ ...form, include_waves_toc_file: checked });
   }
 
@@ -120,13 +111,9 @@ const Form: React.FunctionComponent = () => {
 
         if (form.include_waves_toc_file) {
           const attachment = get_waves_toc_file_attachment()[0];
-          Office.context.mailbox.item.addFileAttachmentAsync(
-            attachment["url"],
-            attachment["name"],
-            {
-              isInline: false,
-            },
-          );
+          Office.context.mailbox.item.addFileAttachmentAsync(attachment["url"], attachment["name"], {
+            isInline: false,
+          });
         }
 
         Office.context.mailbox.item.body.setSelectedDataAsync(

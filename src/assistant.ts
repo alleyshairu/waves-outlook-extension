@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { EmailTemplate } from "./template";
 import { terms_and_conditions } from "./tos";
+
 // TODO: use environment variables
 const KEY = "";
 
@@ -26,10 +27,21 @@ export interface WavesAssistant {
 function prepare_prompt(assistant: WavesAssistant): Prompt[] {
   const prompts: Prompt[] = [];
 
+  prompts.push({
+    role: "system",
+    content:
+      "You are a helpful assistant of Waves Car Wash, and your primary goal is to transform the given text into a helpful email for the customers.",
+  });
+
+  prompts.push({
+    role: "user",
+    content: `Make sure to never add the email title, signature, and final greetings when writing the email. Strictly, skip greetings, title, and final signature from the email.`,
+  });
+
   if (assistant.use_waves_toc_in_prompt) {
     prompts.push({
-      role: "system",
-      content: `You are running a car wash business and these are your terms and conditions are as follows: ${terms_and_conditions}`,
+      role: "user",
+      content: `The complete list of terms and conditions of the waves car wash business are as follows: ${terms_and_conditions}`,
     });
   }
 
@@ -38,19 +50,9 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
     content: generate_prompt(assistant),
   });
 
-  prompts.push({
-    role: "system",
-    content: `Never add the email title, signature, and final greetings when writing the email.`,
-  });
-
   // include instructions if they aren't empty
   if (assistant.instructions) {
     prompts.push({ role: "user", content: assistant.instructions });
-  }
-
-  // only include waves toc if specifically checked
-  if (assistant.use_waves_toc_in_prompt) {
-    // TODO: need to write waves toc + services summary and then add it as a prompt
   }
 
   return prompts;
@@ -59,10 +61,10 @@ function prepare_prompt(assistant: WavesAssistant): Prompt[] {
 function generate_prompt(assistant: WavesAssistant): string {
   let ref = "";
   if (assistant.use_waves_toc_in_prompt) {
-    ref = ` Make sure you write based on the waves terms and condition. `;
+    ref = ` If you believe you can reference terms and conditions, make sure you to use them in your response.`;
   }
 
-  let string = `I have an email that I need to convert into a ${assistant.email_template.key} format. Here's the original text of the email: ${assistant.email}.${ref}Could you help reformat and rewrite this email to meet these requirements?`;
+  let string = `Act as an Waves Car Wash business professional. I want you to convert the following text ${assistant.email} into a ${assistant.email_template.key} business email.${ref}Could you help reformat and rewrite this email to meet these requirements?`;
   return string;
 }
 
